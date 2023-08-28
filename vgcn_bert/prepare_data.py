@@ -9,7 +9,6 @@ import argparse
 import os
 import pickle as pkl
 import random
-import re
 import sys
 import time
 
@@ -17,7 +16,6 @@ import nltk
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
-from nltk.corpus import stopwords
 from sklearn.utils import shuffle
 
 from vgcn_bert.env_config import env_config
@@ -44,7 +42,7 @@ args = parser.parse_args()
 cfg_ds = args.ds
 cfg_del_stop_words = True if args.sw == 1 else False
 
-dataset_list = {"sst", "cola"}
+dataset_list = {"sst", "cola", "olid"}
 
 if cfg_ds not in dataset_list:
     sys.exit("Dataset choice error!")
@@ -100,7 +98,6 @@ print(
     f"bert_lower_case {bert_lower_case}",
 )
 print("\n")
-
 
 """
 Get the tweets,y,confidence etc from data file
@@ -173,7 +170,6 @@ elif cfg_ds == "cola":
     y_prob = np.eye(len(y), len(label2idx))[y]
     corpus_size = len(y)
 
-
 doc_content_list = []
 for t in corpus:
     doc_content_list.append(del_http_user_tokenize(t))
@@ -202,7 +198,6 @@ print(
     )
 )
 
-
 """
 Remove stop words from tweets
 """
@@ -217,7 +212,6 @@ if cfg_del_stop_words:
 else:
     stop_words = {}
 print("Stop_words:", stop_words)
-
 
 tmp_word_freq = {}  # to remove rare words
 new_doc_content_list = []
@@ -261,8 +255,8 @@ for i, doc_content in enumerate(doc_content_list):
         if cfg_ds in ("mr", "sst", "cola"):
             doc_words.append(word)
         elif (
-            word not in stop_words
-            and tmp_word_freq[word] >= freq_min_for_word_choice
+                word not in stop_words
+                and tmp_word_freq[word] >= freq_min_for_word_choice
         ):
             doc_words.append(word)
     doc_str = " ".join(doc_words).strip()
@@ -278,9 +272,7 @@ for i, doc_content in enumerate(doc_content_list):
         )
     clean_docs.append(doc_str)
 
-
 print("Total", count_void_doc, " docs are empty.")
-
 
 min_len = 10000
 min_len_id = -1
@@ -304,7 +296,6 @@ print("Min_len : " + str(min_len) + " id: " + str(min_len_id))
 print("Max_len : " + str(max_len) + " id: " + str(max_len_id))
 print("Average_len : " + str(aver_len))
 
-
 """
 Build graph
 """
@@ -313,15 +304,14 @@ print("Build graph...")
 if cfg_ds in ("mr", "sst", "cola"):
     shuffled_clean_docs = clean_docs
     train_docs = shuffled_clean_docs[:train_size]
-    valid_docs = shuffled_clean_docs[train_size : train_size + valid_size]
+    valid_docs = shuffled_clean_docs[train_size: train_size + valid_size]
     train_valid_docs = shuffled_clean_docs[: train_size + valid_size]
     train_y = y[:train_size]
-    valid_y = y[train_size : train_size + valid_size]
-    test_y = y[train_size + valid_size :]
+    valid_y = y[train_size: train_size + valid_size]
+    test_y = y[train_size + valid_size:]
     train_y_prob = y_prob[:train_size]
-    valid_y_prob = y_prob[train_size : train_size + valid_size]
-    test_y_prob = y_prob[train_size + valid_size :]
-
+    valid_y_prob = y_prob[train_size: train_size + valid_size]
+    test_y_prob = y_prob[train_size + valid_size:]
 
 # build vocab using whole corpus(train+valid+test+genelization)
 word_set = set()
@@ -341,7 +331,6 @@ vocab_map = {}
 for i in range(vocab_size):
     vocab_map[vocab[i]] = i
 
-
 # build vocab_train_valid
 word_set_train_valid = set()
 for doc_words in train_valid_docs:
@@ -350,7 +339,6 @@ for doc_words in train_valid_docs:
         word_set_train_valid.add(word)
 vocab_train_valid = list(word_set_train_valid)
 vocab_train_valid_size = len(vocab_train_valid)
-
 
 # a map for word -> doc_list
 if tfidf_mode == "all_tf_train_valid_idf":
@@ -376,7 +364,6 @@ for i in range(len(for_idf_docs)):
 word_doc_freq = {}
 for word, doc_list in word_doc_list.items():
     word_doc_freq[word] = len(doc_list)
-
 
 """
 Doc word heterogeneous graph
@@ -404,7 +391,7 @@ for doc_words in train_valid_docs:
         windows.append(words)
     else:
         for j in range(length - window_size + 1):
-            window = words[j : j + window_size]
+            window = words[j: j + window_size]
             windows.append(window)
 
 print(
@@ -452,7 +439,6 @@ for window in windows:
                 word_pair_count[word_pair_str] = 1
             appeared.add(word_pair_str)
 
-
 from math import log
 
 row = []
@@ -483,9 +469,9 @@ for key in word_pair_count:
     )
     # 使用normalized pmi:
     npmi = (
-        log(1.0 * word_freq_i * word_freq_j / (num_window * num_window))
-        / log(1.0 * count / num_window)
-        - 1
+            log(1.0 * word_freq_i * word_freq_j / (num_window * num_window))
+            / log(1.0 * count / num_window)
+            - 1
     )
     if npmi > tmp_max_npmi:
         tmp_max_npmi = npmi
@@ -505,7 +491,6 @@ for key in word_pair_count:
         vocab_adj_weight.append(npmi)
 print("max_pmi:", tmp_max_pmi, "min_pmi:", tmp_min_pmi)
 print("max_npmi:", tmp_max_npmi, "min_npmi:", tmp_min_npmi)
-
 
 print("Calculate doc-word tf-idf weight")
 
@@ -552,7 +537,6 @@ for i in range(n_docs):
         weight.extend(tfidf_vec)
         tfidf_weight.extend(tfidf_vec)
 
-
 """
 Assemble adjacency matrix and dump to files
 """
@@ -575,7 +559,6 @@ vocab_adj = sp.csr_matrix(
 )
 vocab_adj.setdiag(1.0)
 
-
 print("Calculate isomorphic vocab adjacency matrix using doc's tf-idf...")
 tfidf_all = sp.csr_matrix(
     (tfidf_weight, (tfidf_row, tfidf_col)),
@@ -583,8 +566,8 @@ tfidf_all = sp.csr_matrix(
     dtype=np.float32,
 )
 tfidf_train = tfidf_all[:train_size]
-tfidf_valid = tfidf_all[train_size : train_size + valid_size]
-tfidf_test = tfidf_all[train_size + valid_size :]
+tfidf_valid = tfidf_all[train_size: train_size + valid_size]
+tfidf_test = tfidf_all[train_size + valid_size:]
 tfidf_X_list = [tfidf_train, tfidf_valid, tfidf_test]
 vocab_tfidf = tfidf_all.T.tolil()
 for i in range(vocab_size):

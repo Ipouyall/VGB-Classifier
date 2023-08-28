@@ -1,24 +1,17 @@
 # -*- coding: utf-8 -*-
-
-# @author Zhibin.LU
-# @website: https://github.com/Louis-udm
-
+import os
+import random
 import re
 
 import numpy as np
 import scipy.sparse as sp
 import torch
 from nltk.tokenize import TweetTokenizer
-from torch.utils import data
-from torch.utils.data import (
-    DataLoader,
-    Dataset,
-    RandomSampler,
-    SequentialSampler,
-    TensorDataset,
-    WeightedRandomSampler,
-)
-from torch.utils.data.distributed import DistributedSampler
+from torch.utils.data import Dataset
+
+# @author Zhibin.LU
+# @website: https://github.com/Louis-udm
+
 
 """
 General functions
@@ -137,15 +130,15 @@ class InputFeatures(object):
     """
 
     def __init__(
-        self,
-        guid,
-        tokens,
-        input_ids,
-        gcn_vocab_ids,
-        input_mask,
-        segment_ids,
-        confidence,
-        label_id,
+            self,
+            guid,
+            tokens,
+            input_ids,
+            gcn_vocab_ids,
+            input_mask,
+            segment_ids,
+            confidence,
+            label_id,
     ):
         self.guid = guid
         self.tokens = tokens
@@ -177,9 +170,8 @@ def _truncate_seq_pair(tokens_a, tokens_b, max_length):
 
 
 def example2feature(
-    example, tokenizer, gcn_vocab_map, max_seq_len, gcn_embedding_dim
+        example, tokenizer, gcn_vocab_map, max_seq_len, gcn_embedding_dim
 ):
-
     # tokens_a = tokenizer.tokenize(example.text_a)
     # do not need use bert.tokenizer again, because be used at prepare_data.py
     tokens_a = example.text_a.split()
@@ -197,7 +189,7 @@ def example2feature(
         gcn_vocab_ids.append(gcn_vocab_map[w])
 
     tokens = (
-        ["[CLS]"] + tokens_a + ["[SEP]" for i in range(gcn_embedding_dim + 1)]
+            ["[CLS]"] + tokens_a + ["[SEP]" for i in range(gcn_embedding_dim + 1)]
     )
     segment_ids = [0] * len(tokens)
 
@@ -223,12 +215,12 @@ def example2feature(
 
 class CorpusDataset(Dataset):
     def __init__(
-        self,
-        examples,
-        tokenizer,
-        gcn_vocab_map,
-        max_seq_len,
-        gcn_embedding_dim,
+            self,
+            examples,
+            tokenizer,
+            gcn_vocab_map,
+            max_seq_len,
+            gcn_embedding_dim,
     ):
         self.examples = examples
         self.tokenizer = tokenizer
@@ -282,8 +274,8 @@ class CorpusDataset(Dataset):
         batch_gcn_vocab_ids_paded = np.array(f_pad2(5, maxlen)).reshape(-1)
         # generate eye matrix according to gcn_vocab_size+1, the 1 is for f_pad2 filling -1, then change to the row with all 0 value.
         batch_gcn_swop_eye = torch.eye(gcn_vocab_size + 1)[
-            batch_gcn_vocab_ids_paded
-        ][:, :-1]
+                                 batch_gcn_vocab_ids_paded
+                             ][:, :-1]
         # This tensor is for transform batch_embedding_tensor to gcn_vocab order
         # -1 is seq_len. usage: batch_gcn_swop_eye.matmul(batch_seq_embedding)
         batch_gcn_swop_eye = batch_gcn_swop_eye.view(
@@ -298,3 +290,12 @@ class CorpusDataset(Dataset):
             batch_label_ids,
             batch_gcn_swop_eye,
         )
+
+
+def set_seed(seed):
+    np.random.seed(seed)
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)

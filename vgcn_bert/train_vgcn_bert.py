@@ -7,24 +7,18 @@
 
 import argparse
 import gc
-import os
 import pickle as pkl
-import random
 import time
 
-import numpy as np
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
-# use pytorch_pretrained_bert.modeling for huggingface transformers 0.6.2
-from pytorch_pretrained_bert.optimization import BertAdam  # , warmup_linear
-from pytorch_pretrained_bert.tokenization import BertTokenizer
-
 # from tqdm import tqdm, trange
 from sklearn.metrics import classification_report, f1_score
 from torch.utils.data import DataLoader
 
+# use pytorch_pretrained_bert.modeling for huggingface transformers 0.6.2
+from pytorch_pretrained_bert.optimization import BertAdam  # , warmup_linear
+from pytorch_pretrained_bert.tokenization import BertTokenizer
 from vgcn_bert.env_config import env_config
 from vgcn_bert.models.vgcn_bert import VGCNBertModel
 from vgcn_bert.utils import *
@@ -40,7 +34,6 @@ cuda_yes = torch.cuda.is_available()
 if cuda_yes:
     torch.cuda.manual_seed_all(env_config.GLOBAL_SEED)
 device = torch.device("cuda:0" if cuda_yes else "cpu")
-
 
 """
 Configuration
@@ -132,12 +125,11 @@ print(
     f"\n  Dropout: {dropout_rate}"
     f"\n  Run_adj: {cfg_vocab_adj}"
     f"\n  gcn_act_func: Relu",
-    f"\n  MAX_SEQ_LENGTH: {MAX_SEQ_LENGTH}",  #'valid_data_taux',valid_data_taux
+    f"\n  MAX_SEQ_LENGTH: {MAX_SEQ_LENGTH}",  # 'valid_data_taux',valid_data_taux
     f"\n  perform_metrics_str: {perform_metrics_str}",
     f"\n  model_file_4save: {model_file_4save}",
     f"\n  validate_program: {args.validate_program}",
 )
-
 
 """
 Prepare data set
@@ -200,13 +192,13 @@ test_size = len(test_y)
 indexs = np.arange(0, len(examples))
 train_examples = [examples[i] for i in indexs[:train_size]]
 valid_examples = [
-    examples[i] for i in indexs[train_size : train_size + valid_size]
+    examples[i] for i in indexs[train_size: train_size + valid_size]
 ]
 test_examples = [
     examples[i]
     for i in indexs[
-        train_size + valid_size : train_size + valid_size + test_size
-    ]
+             train_size + valid_size: train_size + valid_size + test_size
+             ]
 ]
 
 if cfg_adj_tf_threshold > 0:
@@ -234,7 +226,6 @@ for i in range(len(gcn_vocab_adj_list)):
     norm_gcn_vocab_adj_list.append(sparse_scipy2torch(adj.tocoo()).to(device))
 gcn_adj_list = norm_gcn_vocab_adj_list
 
-
 del gcn_vocab_adj_tf, gcn_vocab_adj, gcn_vocab_adj_list
 gc.collect()
 
@@ -249,12 +240,12 @@ tokenizer = BertTokenizer.from_pretrained(
 
 
 def get_pytorch_dataloader(
-    examples,
-    tokenizer,
-    batch_size,
-    shuffle_choice,
-    classes_weight=None,
-    total_resample_size=-1,
+        examples,
+        tokenizer,
+        batch_size,
+        shuffle_choice,
+        classes_weight=None,
+        total_resample_size=-1,
 ):
     ds = CorpusDataset(
         examples, tokenizer, gcn_vocab_map, MAX_SEQ_LENGTH, gcn_embedding_dim
@@ -314,7 +305,6 @@ test_dataloader = get_pytorch_dataloader(
     test_examples, tokenizer, batch_size, shuffle_choice=0
 )
 
-
 # total_train_steps = int(len(train_examples) / batch_size / gradient_accumulation_steps * total_train_epochs)
 total_train_steps = int(
     len(train_dataloader) / gradient_accumulation_steps * total_train_epochs
@@ -328,7 +318,6 @@ print(
 print("  Num examples for validate = %d" % len(valid_examples))
 print("  Batch size = %d" % batch_size)
 print("  Num steps = %d" % total_train_steps)
-
 
 """
 Train vgcn_bert model
@@ -367,7 +356,7 @@ def predict(model, examples, tokenizer, batch_size):
 
 
 def evaluate(
-    model, gcn_adj_list, predict_dataloader, batch_size, epoch_th, dataset_name
+        model, gcn_adj_list, predict_dataloader, batch_size, epoch_th, dataset_name
 ):
     # print("***** Running prediction *****")
     model.eval()
@@ -448,7 +437,7 @@ def evaluate(
 
 print("\n----- Running training -----")
 if will_train_mode_from_checkpoint and os.path.exists(
-    os.path.join(output_dir, model_file_4save)
+        os.path.join(output_dir, model_file_4save)
 ):
     checkpoint = torch.load(
         os.path.join(output_dir, model_file_4save), map_location="cpu"

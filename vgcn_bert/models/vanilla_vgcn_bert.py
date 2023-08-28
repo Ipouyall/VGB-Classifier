@@ -10,20 +10,19 @@ import torch.nn as nn
 
 # for huggingface transformers 0.6.2
 from pytorch_pretrained_bert.modeling import BertForSequenceClassification
-
 from .vgcn_bert import VocabGraphConvolution
 
 
 class VanillaVGCNBert(BertForSequenceClassification):
     def __init__(
-        self,
-        config,
-        gcn_adj_dim,
-        gcn_adj_num,
-        gcn_embedding_dim,
-        num_labels,
-        output_attentions=False,
-        keep_multihead_output=False,
+            self,
+            config,
+            gcn_adj_dim,
+            gcn_adj_num,
+            gcn_embedding_dim,
+            num_labels,
+            output_attentions=False,
+            keep_multihead_output=False,
     ):
         super().__init__(
             config, num_labels, output_attentions=output_attentions
@@ -38,14 +37,14 @@ class VanillaVGCNBert(BertForSequenceClassification):
         self.classifier = nn.Linear((gcn_embedding_dim + 1) * 768, num_labels)
 
     def forward(
-        self,
-        vocab_adj_list,
-        gcn_swop_eye,
-        input_ids,
-        token_type_ids=None,
-        attention_mask=None,
-        output_all_encoded_layers=False,
-        head_mask=None,
+            self,
+            vocab_adj_list,
+            gcn_swop_eye,
+            input_ids,
+            token_type_ids=None,
+            attention_mask=None,
+            output_all_encoded_layers=False,
+            head_mask=None,
     ):
 
         words_embeddings = self.bert.embeddings.word_embeddings(input_ids)

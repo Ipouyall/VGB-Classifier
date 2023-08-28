@@ -61,9 +61,9 @@ class VocabGraphConvolution(nn.Module):
     def reset_parameters(self):
         for n, p in self.named_parameters():
             if (
-                n.startswith("W")
-                or n.startswith("a")
-                or n in ("W", "a", "dense")
+                    n.startswith("W")
+                    or n.startswith("a")
+                    or n in ("W", "a", "dense")
             ):
                 init.kaiming_uniform_(p, a=math.sqrt(5))
 
@@ -118,14 +118,14 @@ class Pretrain_VGCN(nn.Module):
     """
 
     def __init__(
-        self,
-        word_emb,
-        word_emb_dim,
-        gcn_adj_dim,
-        gcn_adj_num,
-        gcn_embedding_dim,
-        num_labels,
-        dropout_rate=0.2,
+            self,
+            word_emb,
+            word_emb_dim,
+            gcn_adj_dim,
+            gcn_adj_num,
+            gcn_embedding_dim,
+            num_labels,
+            dropout_rate=0.2,
     ):
         super(Pretrain_VGCN, self).__init__()
         self.act_func = nn.ReLU()
@@ -139,12 +139,12 @@ class Pretrain_VGCN(nn.Module):
         )
 
     def forward(
-        self,
-        vocab_adj_list,
-        gcn_swop_eye,
-        input_ids,
-        token_type_ids=None,
-        attention_mask=None,
+            self,
+            vocab_adj_list,
+            gcn_swop_eye,
+            input_ids,
+            token_type_ids=None,
+            attention_mask=None,
     ):
         words_embeddings = self.word_emb(input_ids)
         vocab_input = gcn_swop_eye.matmul(words_embeddings).transpose(1, 2)
@@ -193,12 +193,12 @@ class VGCNBertEmbeddings(BertEmbeddings):
         )  # 192/256
 
     def forward(
-        self,
-        vocab_adj_list,
-        gcn_swop_eye,
-        input_ids,
-        token_type_ids=None,
-        attention_mask=None,
+            self,
+            vocab_adj_list,
+            gcn_swop_eye,
+            input_ids,
+            token_type_ids=None,
+            attention_mask=None,
     ):
         words_embeddings = self.word_embeddings(input_ids)
         vocab_input = gcn_swop_eye.matmul(words_embeddings).transpose(1, 2)
@@ -209,14 +209,14 @@ class VGCNBertEmbeddings(BertEmbeddings):
             gcn_words_embeddings = words_embeddings.clone()
             for i in range(self.gcn_embedding_dim):
                 tmp_pos = (
-                    attention_mask.sum(-1) - 2 - self.gcn_embedding_dim + 1 + i
-                ) + torch.arange(0, input_ids.shape[0]).to(
+                                  attention_mask.sum(-1) - 2 - self.gcn_embedding_dim + 1 + i
+                          ) + torch.arange(0, input_ids.shape[0]).to(
                     input_ids.device
                 ) * input_ids.shape[
-                    1
-                ]
+                              1
+                          ]
                 gcn_words_embeddings.flatten(start_dim=0, end_dim=1)[
-                    tmp_pos, :
+                tmp_pos, :
                 ] = gcn_vocab_out[:, :, i]
 
         seq_length = input_ids.size(1)
@@ -232,13 +232,13 @@ class VGCNBertEmbeddings(BertEmbeddings):
 
         if self.gcn_embedding_dim > 0:
             embeddings = (
-                gcn_words_embeddings
-                + position_embeddings
-                + token_type_embeddings
+                    gcn_words_embeddings
+                    + position_embeddings
+                    + token_type_embeddings
             )
         else:
             embeddings = (
-                words_embeddings + position_embeddings + token_type_embeddings
+                    words_embeddings + position_embeddings + token_type_embeddings
             )
 
         embeddings = self.LayerNorm(embeddings)
@@ -283,14 +283,14 @@ class VGCNBertModel(BertModel):
     """
 
     def __init__(
-        self,
-        config,
-        gcn_adj_dim,
-        gcn_adj_num,
-        gcn_embedding_dim,
-        num_labels,
-        output_attentions=False,
-        keep_multihead_output=False,
+            self,
+            config,
+            gcn_adj_dim,
+            gcn_adj_num,
+            gcn_embedding_dim,
+            num_labels,
+            output_attentions=False,
+            keep_multihead_output=False,
     ):
         super().__init__(
             config,
@@ -317,14 +317,14 @@ class VGCNBertModel(BertModel):
         # super().post_init()
 
     def forward(
-        self,
-        vocab_adj_list,
-        gcn_swop_eye,
-        input_ids,
-        token_type_ids=None,
-        attention_mask=None,
-        output_all_encoded_layers=False,
-        head_mask=None,
+            self,
+            vocab_adj_list,
+            gcn_swop_eye,
+            input_ids,
+            token_type_ids=None,
+            attention_mask=None,
+            output_all_encoded_layers=False,
+            head_mask=None,
     ):
         if token_type_ids is None:
             token_type_ids = torch.zeros_like(input_ids)
