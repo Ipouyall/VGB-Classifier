@@ -9,9 +9,6 @@ import torch
 from nltk.tokenize import TweetTokenizer
 from torch.utils.data import Dataset
 
-# @author Zhibin.LU
-# @website: https://github.com/Louis-udm
-
 
 """
 General functions

@@ -5,6 +5,8 @@
 
 """download sst dataset"""
 
+from typing import Iterable
+
 
 class DataReader:
     """
@@ -51,7 +53,7 @@ class DataReader:
 
         return raw_data
 
-    def formate(self, raw_data):
+    def formate(self, raw_data: Iterable[str]):
         """
         Formate raw data
 
@@ -69,14 +71,12 @@ class DataReader:
         dataset = []
 
         for raw in raw_data:
-            num_idx = 0
-            while raw[num_idx] not in "0123456789":
-                num_idx += 1
+            num_idx = raw.find(" ")
 
-            label = int(raw[: num_idx + 1])
+            label = int(raw[: num_idx])
 
             str_idx = num_idx + 1
-            if raw[str_idx] == " ":
+            while raw[str_idx] == " ":
                 str_idx += 1
 
             if raw[-1] == "\n":
