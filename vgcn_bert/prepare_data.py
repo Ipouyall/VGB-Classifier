@@ -70,7 +70,6 @@ def preprocess(config: Config):
     # bert_model_scale='bert-large-uncased'
     bert_model_scale = config.bert_model_for_preprocess
 
-    bert_lower_case = True
 
     """
     Get the tweets,y,confidence etc from data file
@@ -119,16 +118,18 @@ def preprocess(config: Config):
         corpus_size = len(corpus)
         y_prob = np.eye(corpus_size, len(label2idx))[y]
 
-    elif cfg_ds == "cola":
+    elif config.dataset_format == "cola":
         label2idx = {"0": 0, "1": 1}
         idx2label = {0: "0", 1: "1"}
         train_valid_df = pd.read_csv(
-            "data/CoLA/train.tsv", encoding="utf-8", header=None, sep="\t"
+            os.path.join(config.dataset_path, "train.tsv"),
+            encoding="utf-8", header=None, sep="\t"
         )
         train_valid_df = shuffle(train_valid_df)
         # use dev set as test set, because we can not get the ground true label of the real test set.
         test_df = pd.read_csv(
-            "data/CoLA/dev.tsv", encoding="utf-8", header=None, sep="\t"
+            os.path.join(config.dataset_path, "dev.tsv"),
+            encoding="utf-8", header=None, sep="\t"
         )
         test_df = shuffle(test_df)
         train_valid_size = train_valid_df[1].count()
@@ -136,8 +137,9 @@ def preprocess(config: Config):
         train_size = train_valid_size - valid_size
         test_size = test_df[1].count()
         print(
-            "CoLA train_valid Total:", train_valid_size, "test Total:", test_size
+            "CoLA like, train_valid Total:", train_valid_size, "test Total:", test_size
         )
+        print("Attention. Cola-like test id actually validation set!!")
         df = pd.concat((train_valid_df, test_df))
         corpus = df[3]
         y = df[1].values  # y.as_matrix()
@@ -178,7 +180,7 @@ def preprocess(config: Config):
     """
     print("Remove stop words from tweets...")
 
-    if cfg_del_stop_words:
+    if config.delete_stopwords:
         from nltk.corpus import stopwords
 
         nltk.download("stopwords")
@@ -200,14 +202,14 @@ def preprocess(config: Config):
 
         # from transformers import BertTokenizer
 
-        bert_tokenizer = BertTokenizer.from_pretrained(
-            bert_model_scale, do_lower_case=bert_lower_case
+        tokenizer = BertTokenizer.from_pretrained(
+            bert_model_scale, do_lower_case=config.bert_tokenizer_lower
         )
 
     for doc_content in doc_content_list:
         new_doc = clean_str(doc_content)
         if cfg_use_bert_tokenizer_at_clean:
-            sub_words = bert_tokenizer.tokenize(new_doc)
+            sub_words = tokenizer.tokenize(new_doc)
             sub_doc = " ".join(sub_words).strip()
             new_doc = sub_doc
         new_doc_content_list.append(new_doc)
@@ -227,12 +229,9 @@ def preprocess(config: Config):
         doc_words = []
         for word in words:
             # if tmp_word_freq[word] >= freq_min_for_word_choice:
-            if cfg_ds in ("mr", "sst", "cola"):
+            if config.use_larger_cw or not config.delete_stopwords:
                 doc_words.append(word)
-            elif (
-                    word not in stop_words
-                    and tmp_word_freq[word] >= freq_min_for_word_choice
-            ):
+            elif word not in stop_words and tmp_word_freq[word] >= freq_min_for_word_choice:
                 doc_words.append(word)
         doc_str = " ".join(doc_words).strip()
         if doc_str == "":
@@ -276,17 +275,17 @@ def preprocess(config: Config):
     """
     print("Build graph...")
 
-    if cfg_ds in ("mr", "sst", "cola"):
-        shuffled_clean_docs = clean_docs
-        train_docs = shuffled_clean_docs[:train_size]
-        valid_docs = shuffled_clean_docs[train_size: train_size + valid_size]
-        train_valid_docs = shuffled_clean_docs[: train_size + valid_size]
-        train_y = y[:train_size]
-        valid_y = y[train_size: train_size + valid_size]
-        test_y = y[train_size + valid_size:]
-        train_y_prob = y_prob[:train_size]
-        valid_y_prob = y_prob[train_size: train_size + valid_size]
-        test_y_prob = y_prob[train_size + valid_size:]
+
+    shuffled_clean_docs = clean_docs
+    train_docs = shuffled_clean_docs[:train_size]
+    valid_docs = shuffled_clean_docs[train_size: train_size + valid_size]
+    train_valid_docs = shuffled_clean_docs[: train_size + valid_size]
+    train_y = y[:train_size]
+    valid_y = y[train_size: train_size + valid_size]
+    test_y = y[train_size + valid_size:]
+    train_y_prob = y_prob[:train_size]
+    valid_y_prob = y_prob[train_size: train_size + valid_size]
+    test_y_prob = y_prob[train_size + valid_size:]
 
     # build vocab using whole corpus(train+valid+test+genelization)
     word_set = set()
@@ -564,45 +563,74 @@ def preprocess(config: Config):
 
     # dump objects
     if will_dump_objects:
-        print("Dump objects...")
+        print("Dumping objects...")
 
-        with open(dump_dir + "/data_%s.labels" % cfg_ds, "wb") as f:
+        label_file = f"data_{config.dataset_name}.labels"
+        with open(os.path.join(dump_dir, label_file), "wb") as f:
             pkl.dump([label2idx, idx2label], f)
 
-        with open(dump_dir + "/data_%s.vocab_map" % cfg_ds, "wb") as f:
+        vocab_map_file = f"/data_{config.dataset_name}.vocab_map"
+        with open(os.path.join(dump_dir, vocab_map_file), "wb") as f:
             pkl.dump(vocab_map, f)
 
-        with open(dump_dir + "/data_%s.vocab" % cfg_ds, "wb") as f:
+        vocab_file = f"/data_{config.dataset_name}.vocab"
+        with open(os.path.join(config.dump_path, vocab_file), "wb") as f:
             pkl.dump(vocab, f)
 
-        with open(dump_dir + "/data_%s.adj_list" % cfg_ds, "wb") as f:
+        adj_file = f"/data_{config.dataset_name}.adj_list"
+        with open(os.path.join(config.dump_path + adj_file), "wb") as f:
             pkl.dump(adj_list, f)
-        with open(dump_dir + "/data_%s.y" % cfg_ds, "wb") as f:
+
+        y_file = f"/data_{config.dataset_name}.y"
+        with open(os.path.join(config.dump_path, y_file), "wb") as f:
             pkl.dump(y, f)
-        with open(dump_dir + "/data_%s.y_prob" % cfg_ds, "wb") as f:
+
+        y_prob_file = f"/data_{config.dataset_name}.y_prob"
+        with open(os.path.join(config.dump_path, y_prob_file), "wb") as f:
             pkl.dump(y_prob, f)
-        with open(dump_dir + "/data_%s.train_y" % cfg_ds, "wb") as f:
+
+        y_train_file = f"/data_{config.dataset_name}.y_train"
+        with open(os.path.join(config.dump_path, y_train_file), "wb") as f:
             pkl.dump(train_y, f)
-        with open(dump_dir + "/data_%s.train_y_prob" % cfg_ds, "wb") as f:
+
+        train_y_prob_file = f"/data_{config.dataset_name}.y_train_prob"
+        with open(os.path.join(config.dump_path, train_y_prob_file), "wb") as f:
             pkl.dump(train_y_prob, f)
-        with open(dump_dir + "/data_%s.valid_y" % cfg_ds, "wb") as f:
+
+        valid_y_file = f"/data_{config.dataset_name}.y_valid"
+        with open(os.path.join(config.dump_path, valid_y_file), "wb") as f:
             pkl.dump(valid_y, f)
-        with open(dump_dir + "/data_%s.valid_y_prob" % cfg_ds, "wb") as f:
+
+        valid_y_prob_file = f"/data_{config.dataset_name}.y_valid_prob"
+        with open(os.path.join(config.dump_path, valid_y_prob_file), "wb") as f:
             pkl.dump(valid_y_prob, f)
-        with open(dump_dir + "/data_%s.test_y" % cfg_ds, "wb") as f:
+
+        test_y_file = f"/data_{config.dataset_name}.test_y"
+        with open(os.path.join(config.dump_path, test_y_file), "wb") as f:
             pkl.dump(test_y, f)
-        with open(dump_dir + "/data_%s.test_y_prob" % cfg_ds, "wb") as f:
+
+        test_y_prob_file = f"/data_{config.dataset_name}.test_y_prob"
+        with open(os.path.join(config.dump_path, test_y_prob_file), "wb") as f:
             pkl.dump(test_y_prob, f)
-        with open(dump_dir + "/data_%s.tfidf_list" % cfg_ds, "wb") as f:
+
+        tfidf_list_file = f"/data_{config.dataset_name}.tfidf_list"
+        with open(os.path.join(config.dump_path, tfidf_list_file), "wb") as f:
             pkl.dump(tfidf_X_list, f)
-        with open(dump_dir + "/data_%s.vocab_adj_pmi" % (cfg_ds), "wb") as f:
+
+        vocab_adj_pmi_file = f"/data_{config.dataset_name}.vocab_adj_pmi"
+        with open(os.path.join(config.dump_path, vocab_adj_pmi_file), "wb") as f:
             pkl.dump(vocab_adj, f)
-        with open(dump_dir + "/data_%s.vocab_adj_tf" % (cfg_ds), "wb") as f:
+
+        vocab_adj_tf_file = f"/data_{config.dataset_name}.vocab_adj_tf"
+        with open(os.path.join(config.dump_path, vocab_adj_tf_file), "wb") as f:
             pkl.dump(vocab_adj_tf, f)
-        with open(dump_dir + "/data_%s.shuffled_clean_docs" % cfg_ds, "wb") as f:
+
+        shuffled_clean_docs_file = f"/data_{config.dataset_name}.shuffled_clean_docs"
+        with open(os.path.join(config.dump_path, shuffled_clean_docs_file), "wb") as f:
             pkl.dump(shuffled_clean_docs, f)
 
     print("Data prepared, spend %.2f s" % (time.time() - start))
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

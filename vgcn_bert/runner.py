@@ -16,8 +16,9 @@ class Config:
     dumps_objects: bool = False
     dump_path: Optional[str] = None
 
-    tf_idf_mode: Literal["only_tf", "all_tfidf"] = "only_tf"
+    tf_idf_mode: Literal["only_tf", "all_tfidf", "all_tf_train_valid_idf"] = "only_tf"
     bert_model_for_preprocess: Optional[str] = "bert-base-uncased"
+    bert_tokenizer_lower: bool = True
 
     random_seed = 42
 
@@ -32,6 +33,9 @@ class Config:
                 "preprocess",
                 self.dataset_name
             )
+        if self.dataset_format == "auto":
+            print("'auto' format processor hasn't implemented!")
+            exit(1)
 
     def __repr__(self):
         print(f"""
@@ -42,12 +46,13 @@ Config(
     {self.dataset_path=},
     {self.delete_stopwords=},
     {self.higher_threshold_for_sw},
-    {self.use_larger_cw=} (suggested for "mr", "sst", "cola"| capture almost whole sentence),
+    {self.use_larger_cw=} (suggested for "mr", "sst", "cola"|capture almost whole sentence),
     {self.dumps_objects=},
     {self.dump_path=},
     
-    {self.tf_idf_mode=},
-    {self.bert_model_for_preprocess=},
+    {self.tf_idf_mode=} ('only_tf' or 'all_tfidf' or 'all_tf_train_valid_idf'),
+    {self.bert_model_for_preprocess=} (only the tokenizer would be used),
+    bert_tokenizer_lowercasing={self.bert_tokenizer_lower},
     
     {self.random_seed=},
     
