@@ -9,7 +9,6 @@ import argparse
 import os
 import pickle as pkl
 import random
-import sys
 import time
 
 import nltk
@@ -17,9 +16,7 @@ import numpy as np
 import pandas as pd
 import scipy.sparse as sp
 from sklearn.utils import shuffle
-import torch
 
-from vgcn_bert.env_config import env_config
 from vgcn_bert.utils import clean_str, del_http_user_tokenize, set_seed
 from vgcn_bert.runner import Config
 #
@@ -68,7 +65,7 @@ def preprocess(config: Config):
     cfg_use_bert_tokenizer_at_clean = True
 
     # bert_model_scale='bert-large-uncased'
-    bert_model_scale = config.bert_model_for_preprocess
+    bert_model_scale = config.bert_model_for_preprocessing
 
 
     """

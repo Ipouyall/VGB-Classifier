@@ -17,12 +17,25 @@ class Config:
     dump_path: Optional[str] = None
 
     tf_idf_mode: Literal["only_tf", "all_tfidf", "all_tf_train_valid_idf"] = "only_tf"
-    bert_model_for_preprocess: Optional[str] = "bert-base-uncased"
+    bert_model_for_preprocessing: Optional[str] = "bert-base-uncased"
     bert_tokenizer_lower: bool = True
 
     random_seed = 42
 
     disable_cuda: bool = False
+
+    model: str = "VGCN_BERT"
+    bert_model_for_training: str = "bert-base-uncased"
+    learning_rate: float = 1e-5
+    weight_decay: float = 1e-2
+    dimension: int = 16
+    epochs: int = 9
+    dropout: float = 0.2
+    batch_size: int = 16
+    warmup_proportion: float = 0.1
+    model_dump_path: str = "output"
+    mission: Literal["validate", "train"] = "train"
+    cfg_vocab_adj: Literal["pmi", "tf", "all"] = "pmi"
 
     def __post_init__(self):
         self.device = 'cuda' if torch.cuda.is_available() and not self.disable_cuda else 'cpu'
@@ -36,6 +49,15 @@ class Config:
         if self.dataset_format == "auto":
             print("'auto' format processor hasn't implemented!")
             exit(1)
+
+        if self.mission == "validate":
+            print("Set epochs to 1 for validation!")
+            self.epochs = 1
+
+        if self.bert_model_for_preprocessing != self.bert_model_for_training:
+            print("Warning::Using different models for trainer and tokenizer!")
+            print("         bert_preprocess would be used as tokenizer in preprocessing")
+            print("         bert_trainer would be used as model and tokenizer in training")
 
     def __repr__(self):
         print(f"""
@@ -51,7 +73,7 @@ Config(
     {self.dump_path=},
     
     {self.tf_idf_mode=} ('only_tf' or 'all_tfidf' or 'all_tf_train_valid_idf'),
-    {self.bert_model_for_preprocess=} (only the tokenizer would be used),
+    {self.bert_model_for_preprocessing=} (only the tokenizer would be used),
     bert_tokenizer_lowercasing={self.bert_tokenizer_lower},
     
     {self.random_seed=},
