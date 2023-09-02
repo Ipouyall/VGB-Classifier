@@ -21,7 +21,7 @@ from pytorch_pretrained_bert.optimization import BertAdam  # , warmup_linear
 from pytorch_pretrained_bert.tokenization import BertTokenizer
 from vgcn_bert.models.vgcn_bert import VGCNBertModel
 from vgcn_bert.utils import *
-from vgcn_bert.runner import Config
+from vgcn_bert import Config
 
 # from transformers import BertTokenizer,AdamW
 

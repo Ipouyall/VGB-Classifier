@@ -18,7 +18,7 @@ import scipy.sparse as sp
 from sklearn.utils import shuffle
 
 from vgcn_bert.utils import clean_str, del_http_user_tokenize, set_seed
-from vgcn_bert.runner import Config
+from vgcn_bert import Config
 #
 # random.seed(env_config.GLOBAL_SEED)
 # np.random.seed(env_config.GLOBAL_SEED)
