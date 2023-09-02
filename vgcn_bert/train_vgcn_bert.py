@@ -157,14 +157,14 @@ def train(config: Config):
     do_softmax_before_mse = True
     cfg_loss_criterion = "cle"
     model_file_4save = (
-        f"{cfg_model_type}{gcn_embedding_dim}_model_{args.ds}_{cfg_loss_criterion}"
+        f"{cfg_model_type}{gcn_embedding_dim}_model_{config.dataset_name}_{cfg_loss_criterion}"
         f"_sw{int(cfg_stop_words)}.pt"
     )
 
     print(cfg_model_type + " Start at:", time.asctime())
     print(
         "\n----- Configure -----",
-        f"\n  args.ds: {args.ds}",
+        f"\n  dataset: {config.dataset_name}",
         f"\n  stop_words: {cfg_stop_words}",
         # '\n  Vocab GCN_hidden_dim: 768 -> 1152 -> 768',
         f"\n  Vocab GCN_hidden_dim: vocab_size -> 128 -> {str(gcn_embedding_dim)}",
@@ -183,7 +183,7 @@ def train(config: Config):
 
     print("\n----- Prepare data set -----")
     print(
-        f"  Load/shuffle/seperate {args.ds} dataset, and vocabulary graph adjacent matrix"
+        f"  Load/shuffle/seperate {config.dataset_name} dataset, and vocabulary graph adjacent matrix"
     )
 
     objects = []
@@ -290,7 +290,7 @@ def train(config: Config):
 
 
     # ds size=1 for validating the program
-    if args.validate_program:
+    if config.mission == "validate":
         train_examples = [train_examples[0]]
         valid_examples = [valid_examples[0]]
         test_examples = [test_examples[0]]
