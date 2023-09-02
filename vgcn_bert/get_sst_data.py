@@ -71,9 +71,11 @@ class DataReader:
         dataset = []
 
         for raw in raw_data:
-            num_idx = raw.find(" ")
+            num_idx = 0
+            while raw[num_idx] not in "0123456789":
+                num_idx += 1
 
-            label = int(raw[: num_idx])
+            label = int(raw[: num_idx + 1])
 
             str_idx = num_idx + 1
             while raw[str_idx] == " ":
