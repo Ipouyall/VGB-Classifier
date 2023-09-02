@@ -19,20 +19,14 @@ from sklearn.utils import shuffle
 
 from vgcn_bert.utils import clean_str, del_http_user_tokenize, set_seed
 from vgcn_bert import Config
-#
-# random.seed(env_config.GLOBAL_SEED)
-# np.random.seed(env_config.GLOBAL_SEED)
-# cuda_yes = torch.cuda.is_available()
-# device = torch.device("cuda:0" if cuda_yes else "cpu")
-# torch.manual_seed(44)
-# if cuda_yes:
-#     torch.cuda.manual_seed_all(44)
 
 
 def preprocess(config: Config):
     if not config.needs_preprocess:
         print("Preprocess disabled by user.")
         return
+
+    set_seed(config.random_seed)
 
     dataset_list = {"sst", "cola", "olid"}
 
@@ -193,11 +187,9 @@ def preprocess(config: Config):
     # use bert_tokenizer for split the sentence
     if cfg_use_bert_tokenizer_at_clean:
         print("Use bert_tokenizer for seperate words to bert vocab")
-        from pytorch_pretrained_bert import (  # for Huggingface transformer 0.6.2)
+        from pytorch_pretrained_bert import (  # for Huggingface transformer 0.6.2
             BertTokenizer,
         )
-
-        # from transformers import BertTokenizer
 
         tokenizer = BertTokenizer.from_pretrained(
             bert_model_scale, do_lower_case=config.bert_tokenizer_lower

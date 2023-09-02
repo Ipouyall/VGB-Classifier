@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# @author Zhibin.LU
-# @website: https://github.com/Louis-udm
-
-"""Train vgcn_bert model"""
-
 import argparse
 import gc
 import pickle as pkl
@@ -12,7 +7,6 @@ import time
 
 import torch.nn as nn
 import torch.nn.functional as F
-# from tqdm import tqdm, trange
 from sklearn.metrics import classification_report, f1_score
 from torch.utils.data import DataLoader, WeightedRandomSampler
 
@@ -22,8 +16,6 @@ from pytorch_pretrained_bert.tokenization import BertTokenizer
 from vgcn_bert.models.vgcn_bert import VGCNBertModel
 from vgcn_bert.utils import *
 from vgcn_bert import Config
-
-# from transformers import BertTokenizer,AdamW
 
 
 def get_pytorch_dataloader(
