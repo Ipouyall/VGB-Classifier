@@ -62,7 +62,7 @@ class Config:
             print("         bert_trainer would be used as model and tokenizer in training")
 
     def __repr__(self):
-        print(f"""
+        return f"""
 Config(
     {self.needs_preprocess=},
     {self.dataset_name}
@@ -82,7 +82,7 @@ Config(
 
     {self.device=},
 
-)""")
+)"""
 
 
 class Runner:
