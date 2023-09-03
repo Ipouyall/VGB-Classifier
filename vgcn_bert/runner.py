@@ -69,7 +69,7 @@ Config(
     {self.dataset_format=},
     {self.dataset_path=},
     {self.delete_stopwords=},
-    {self.higher_threshold_for_sw},
+    {self.higher_threshold_for_sw=},
     {self.use_larger_cw=} (suggested for "mr", "sst", "cola"|capture almost whole sentence),
     {self.dumps_objects=},
     {self.dump_path=},
@@ -82,7 +82,7 @@ Config(
 
     {self.device=},
 
-""")
+)""")
 
 
 class Runner:

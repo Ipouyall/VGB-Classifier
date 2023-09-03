@@ -158,7 +158,7 @@ def train(config: Config):
         "\n----- Configure -----",
         f"\n  dataset: {config.dataset_name}",
         f"\n  stop_words: {cfg_stop_words}",
-        # '\n  Vocab GCN_hidden_dim: 768 -> 1152 -> 768',
+        '\n  Vocab GCN_hidden_dim: 768 -> 1152 -> 768',
         f"\n  Vocab GCN_hidden_dim: vocab_size -> 128 -> {str(gcn_embedding_dim)}",
         f"\n  Learning_rate0: {learning_rate0}" f"\n  weight_decay: {l2_decay}",
         f"\n  Loss_criterion {cfg_loss_criterion}"
@@ -193,7 +193,7 @@ def train(config: Config):
         "vocab_map",
     ]
     for i in range(len(names)):
-        _file = f"/data_{config.dataset_name}.{names[i]}"
+        _file = f"data_{config.dataset_name}.{names[i]}"
         datafile = os.path.join(config.dump_path, _file)
         with open(datafile, "rb") as f:
             objects.append(pkl.load(f, encoding="latin1"))
