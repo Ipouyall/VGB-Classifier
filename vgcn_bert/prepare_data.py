@@ -557,81 +557,81 @@ def preprocess(config):
         with open(os.path.join(dump_dir, label_file), "wb") as f:
             pkl.dump([label2idx, idx2label], f)
 
-        vocab_map_file = f"/data_{config.dataset_name}.vocab_map"
+        vocab_map_file = f"data_{config.dataset_name}.vocab_map"
         with open(os.path.join(dump_dir, vocab_map_file), "wb") as f:
             pkl.dump(vocab_map, f)
 
-        vocab_file = f"/data_{config.dataset_name}.vocab"
+        vocab_file = f"data_{config.dataset_name}.vocab"
         with open(os.path.join(config.dump_path, vocab_file), "wb") as f:
             pkl.dump(vocab, f)
 
-        adj_file = f"/data_{config.dataset_name}.adj_list"
+        adj_file = f"data_{config.dataset_name}.adj_list"
         with open(os.path.join(config.dump_path + adj_file), "wb") as f:
             pkl.dump(adj_list, f)
 
-        y_file = f"/data_{config.dataset_name}.y"
+        y_file = f"data_{config.dataset_name}.y"
         with open(os.path.join(config.dump_path, y_file), "wb") as f:
             pkl.dump(y, f)
 
-        y_prob_file = f"/data_{config.dataset_name}.y_prob"
+        y_prob_file = f"data_{config.dataset_name}.y_prob"
         with open(os.path.join(config.dump_path, y_prob_file), "wb") as f:
             pkl.dump(y_prob, f)
 
-        y_train_file = f"/data_{config.dataset_name}.y_train"
+        y_train_file = f"data_{config.dataset_name}.y_train"
         with open(os.path.join(config.dump_path, y_train_file), "wb") as f:
             pkl.dump(train_y, f)
 
-        train_y_prob_file = f"/data_{config.dataset_name}.y_train_prob"
+        train_y_prob_file = f"data_{config.dataset_name}.y_train_prob"
         with open(os.path.join(config.dump_path, train_y_prob_file), "wb") as f:
             pkl.dump(train_y_prob, f)
 
-        valid_y_file = f"/data_{config.dataset_name}.y_valid"
+        valid_y_file = f"data_{config.dataset_name}.y_valid"
         with open(os.path.join(config.dump_path, valid_y_file), "wb") as f:
             pkl.dump(valid_y, f)
 
-        valid_y_prob_file = f"/data_{config.dataset_name}.y_valid_prob"
+        valid_y_prob_file = f"data_{config.dataset_name}.y_valid_prob"
         with open(os.path.join(config.dump_path, valid_y_prob_file), "wb") as f:
             pkl.dump(valid_y_prob, f)
 
-        test_y_file = f"/data_{config.dataset_name}.test_y"
+        test_y_file = f"data_{config.dataset_name}.test_y"
         with open(os.path.join(config.dump_path, test_y_file), "wb") as f:
             pkl.dump(test_y, f)
 
-        test_y_prob_file = f"/data_{config.dataset_name}.test_y_prob"
+        test_y_prob_file = f"data_{config.dataset_name}.test_y_prob"
         with open(os.path.join(config.dump_path, test_y_prob_file), "wb") as f:
             pkl.dump(test_y_prob, f)
 
-        tfidf_list_file = f"/data_{config.dataset_name}.tfidf_list"
+        tfidf_list_file = f"data_{config.dataset_name}.tfidf_list"
         with open(os.path.join(config.dump_path, tfidf_list_file), "wb") as f:
             pkl.dump(tfidf_X_list, f)
 
-        vocab_adj_pmi_file = f"/data_{config.dataset_name}.vocab_adj_pmi"
+        vocab_adj_pmi_file = f"data_{config.dataset_name}.vocab_adj_pmi"
         with open(os.path.join(config.dump_path, vocab_adj_pmi_file), "wb") as f:
             pkl.dump(vocab_adj, f)
 
-        vocab_adj_tf_file = f"/data_{config.dataset_name}.vocab_adj_tf"
+        vocab_adj_tf_file = f"data_{config.dataset_name}.vocab_adj_tf"
         with open(os.path.join(config.dump_path, vocab_adj_tf_file), "wb") as f:
             pkl.dump(vocab_adj_tf, f)
 
-        shuffled_clean_docs_file = f"/data_{config.dataset_name}.shuffled_clean_docs"
+        shuffled_clean_docs_file = f"data_{config.dataset_name}.shuffled_clean_docs"
         with open(os.path.join(config.dump_path, shuffled_clean_docs_file), "wb") as f:
             pkl.dump(shuffled_clean_docs, f)
 
     print("Data prepared, spend %.2f s" % (time.time() - start))
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--ds", type=str, default="cola")
-    parser.add_argument("--sw", type=int, default=0)
-    args = parser.parse_args()
-
-    config = Config(
-        needs_preprocess=True,
-        dataset_path=args.ds,
-        dataset_format="auto",
-        delete_stopwords=True if args.sw else False,
-    )
-
-    preprocess(config)
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--ds", type=str, default="cola")
+#     parser.add_argument("--sw", type=int, default=0)
+#     args = parser.parse_args()
+#
+#     config = Config(
+#         needs_preprocess=True,
+#         dataset_path=args.ds,
+#         dataset_format="auto",
+#         delete_stopwords=True if args.sw else False,
+#     )
+#
+#     preprocess(config)
 
