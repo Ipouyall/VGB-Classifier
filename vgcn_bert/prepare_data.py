@@ -18,10 +18,11 @@ import scipy.sparse as sp
 from sklearn.utils import shuffle
 
 from vgcn_bert.utils import clean_str, del_http_user_tokenize, set_seed
-from vgcn_bert import Config
+from vgcn_bert.get_sst_data import DataReader
+# from vgcn_bert import Config
 
 
-def preprocess(config: Config):
+def preprocess(config):
     if not config.needs_preprocess:
         print("Preprocess disabled by user.")
         return
@@ -69,8 +70,6 @@ def preprocess(config: Config):
     start = time.time()
 
     if config.dataset_format == "sst":
-        from get_sst_data import DataReader
-
         train, valid, test = DataReader(
             os.path.join(config.dataset_path, "train.txt"),
             os.path.join(config.dataset_path, "dev.txt"),

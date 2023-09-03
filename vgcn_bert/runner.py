@@ -6,6 +6,7 @@ import os
 
 from vgcn_bert.prepare_data import preprocess
 
+
 @dataclass()
 class Config:
     needs_preprocess: bool = True
