@@ -577,19 +577,19 @@ def preprocess(config):
         with open(os.path.join(config.dump_path, y_prob_file), "wb") as f:
             pkl.dump(y_prob, f)
 
-        y_train_file = f"data_{config.dataset_name}.y_train"
+        y_train_file = f"data_{config.dataset_name}.train_y"
         with open(os.path.join(config.dump_path, y_train_file), "wb") as f:
             pkl.dump(train_y, f)
 
-        train_y_prob_file = f"data_{config.dataset_name}.y_train_prob"
+        train_y_prob_file = f"data_{config.dataset_name}.train_y_prob"
         with open(os.path.join(config.dump_path, train_y_prob_file), "wb") as f:
             pkl.dump(train_y_prob, f)
 
-        valid_y_file = f"data_{config.dataset_name}.y_valid"
+        valid_y_file = f"data_{config.dataset_name}.valid_y"
         with open(os.path.join(config.dump_path, valid_y_file), "wb") as f:
             pkl.dump(valid_y, f)
 
-        valid_y_prob_file = f"data_{config.dataset_name}.y_valid_prob"
+        valid_y_prob_file = f"data_{config.dataset_name}.valid_y_prob"
         with open(os.path.join(config.dump_path, valid_y_prob_file), "wb") as f:
             pkl.dump(valid_y_prob, f)
 
@@ -617,7 +617,7 @@ def preprocess(config):
         with open(os.path.join(config.dump_path, shuffled_clean_docs_file), "wb") as f:
             pkl.dump(shuffled_clean_docs, f)
 
-    print("Data prepared, spend %.2f s" % (time.time() - start))
+    print("Data prepared, spend %.2f (s)" % (time.time() - start))
 
 
 # if __name__ == "__main__":
