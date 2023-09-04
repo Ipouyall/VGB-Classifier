@@ -71,9 +71,9 @@ if __name__ == "__main__":
     if not os.path.exists(base):
         os.mkdir(base)
 
-    train[["label", "tweet"]].to_csv(base + "train.txt", index=False, header=False, sep=' ')
-    test[["label", "tweet"]].to_csv(base + "test.txt", index=False, header=False, sep=' ')
-    valid[["label", "tweet"]].to_csv(base + "dev.txt", index=False, header=False, sep=' ')
+    train[["label", "tweet"]].to_csv(base + "train.txt", index=False, header=False, sep='\t')
+    test[["label", "tweet"]].to_csv(base + "test.txt", index=False, header=False, sep='\t')
+    valid[["label", "tweet"]].to_csv(base + "dev.txt", index=False, header=False, sep='\t')
 
 
 
