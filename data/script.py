@@ -50,13 +50,17 @@ if __name__ == "__main__":
 
     # Remove usernames starting with @
     df["tweet"] = df["tweet"].apply(lambda x: re.sub(r'@\w+', '', x))
+
     # Remove hashtags
     df["tweet"] = df["tweet"].apply(lambda x: re.sub(r'#', '', x))
+
     # Remove URLs
     df["tweet"] = df["tweet"].apply(lambda x: re.sub(r'http\S+|www\S+|https\S+', '', x))
+
     # Handle emoji
     # df["tweet"] = df["tweet"].apply(lambda x: remove_emojis(x))
     df["tweet"] = df["tweet"].apply(convert_emoji_to_text)
+
     # Remove extra whitespace
     df["tweet"] = df["tweet"].apply(lambda x: re.sub(r'\s+', ' ', x).strip())
 
