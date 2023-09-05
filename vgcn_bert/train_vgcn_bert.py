@@ -13,6 +13,7 @@ from torch.utils.data import DataLoader, WeightedRandomSampler
 # use pytorch_pretrained_bert.modeling for huggingface transformers 0.6.2
 from pytorch_pretrained_bert.optimization import BertAdam  # , warmup_linear
 from pytorch_pretrained_bert.tokenization import BertTokenizer
+
 from vgcn_bert.models.vgcn_bert import VGCNBertModel
 from vgcn_bert.utils import *
 from vgcn_bert import Config
@@ -276,10 +277,6 @@ def train(config: Config):
     tokenizer = BertTokenizer.from_pretrained(
         config.bert_model_for_training, do_lower_case=do_lower_case
     )
-
-
-
-
 
     # ds size=1 for validating the program
     if config.mission == "validate":

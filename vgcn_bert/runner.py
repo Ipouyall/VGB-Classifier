@@ -64,6 +64,10 @@ class Config:
         if self.model != "VGCN_BERT":
             raise Exception("Not implemented!")
 
+        if self.bert_model_for_training in ["gpt2","gpt2-medium","openai-gpt","transfo-xl-wt103"] or \
+            self.bert_model_for_preprocessing in ["gpt2","gpt2-medium","openai-gpt","transfo-xl-wt103"]:
+            raise Exception("Not implemented!")
+
     def __repr__(self):
         return f"""
 Config(
@@ -84,7 +88,19 @@ Config(
     {self.random_seed=},
 
     {self.device=},
-
+    {self.model=}
+    
+    {self.bert_model_for_training=},
+    {self.learning_rate=},
+    {self.weight_decay=},
+    {self.dimension=},
+    {self.dropout=},
+    {self.batch_size=},
+    {self.warmup_proportion=},
+    {self.mission=},
+    {self.epochs=},
+    {self.model_dump_path=},
+    {self.cfg_vocab_adj=}
 )"""
 
 
