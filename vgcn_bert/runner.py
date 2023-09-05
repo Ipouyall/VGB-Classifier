@@ -61,6 +61,9 @@ class Config:
             print("         bert_preprocess would be used as tokenizer in preprocessing")
             print("         bert_trainer would be used as model and tokenizer in training")
 
+        if self.model != "VGCN_BERT":
+            raise Exception("Not implemented!")
+
     def __repr__(self):
         return f"""
 Config(
