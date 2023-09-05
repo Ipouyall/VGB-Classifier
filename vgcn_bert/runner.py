@@ -19,7 +19,7 @@ class Config:
     dump_path: Optional[str] = None
 
     tf_idf_mode: Literal["only_tf", "all_tfidf", "all_tf_train_valid_idf"] = "only_tf"
-    bert_model_for_preprocessing: Optional[str] = "bert-base-uncased"
+    bert_model_for_preprocessing: Literal["bert-base-uncased","bert-large-uncased","bert-base-multilingual-uncased","gpt2","gpt2-medium","openai-gpt","transfo-xl-wt103"] = "bert-base-uncased"
     bert_tokenizer_lower: bool = True
 
     random_seed = 42
@@ -27,7 +27,7 @@ class Config:
     disable_cuda: bool = False
 
     model: str = "VGCN_BERT"
-    bert_model_for_training: str = "bert-base-uncased"
+    bert_model_for_training: Literal["bert-base-uncased","bert-large-uncased","bert-base-multilingual-uncased","gpt2","gpt2-medium","openai-gpt","transfo-xl-wt103"] = "bert-base-uncased"
     learning_rate: float = 1e-5
     weight_decay: float = 1e-2
     dimension: int = 16
