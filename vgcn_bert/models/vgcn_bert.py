@@ -58,6 +58,10 @@ class VocabGraphConvolution(nn.Module):
 
         self.reset_parameters()
 
+        print(
+            f"""\nVOC::DIM>>{voc_dim}\nHID::DIM>>{hid_dim}\nOUT::DIM>>{out_dim}\nADJ::NUM>>{num_adj}\n"""
+        )
+
     def reset_parameters(self):
         for n, p in self.named_parameters():
             if (
@@ -191,6 +195,10 @@ class VGCNBertEmbeddings(BertEmbeddings):
         self.vocab_gcn = VocabGraphConvolution(
             gcn_adj_dim, gcn_adj_num, 128, gcn_embedding_dim
         )  # 192/256
+
+        print(
+            f"""\ngcn_adj_dim>>{gcn_adj_dim}\ngcn_adj_num>>{gcn_adj_num}\ngcn_embedding_dim>>{gcn_embedding_dim}\n"""
+        )
 
     def forward(
             self,

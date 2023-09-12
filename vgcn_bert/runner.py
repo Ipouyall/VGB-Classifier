@@ -19,7 +19,7 @@ class Config:
     dump_path: Optional[str] = None
 
     tf_idf_mode: Literal["only_tf", "all_tfidf", "all_tf_train_valid_idf"] = "only_tf"
-    bert_model_for_preprocessing: Literal["bert-base-uncased","bert-large-uncased","bert-base-multilingual-uncased","gpt2","gpt2-medium","openai-gpt","transfo-xl-wt103"] = "bert-base-uncased"
+    bert_model_for_preprocessing: Literal["bert-base-uncased", "bert-large-uncased", "bert-base-multilingual-uncased", "gpt2", "gpt2-medium", "openai-gpt", "transfo-xl-wt103"] = "bert-base-uncased"
     bert_tokenizer_lower: bool = True
 
     random_seed = 42
