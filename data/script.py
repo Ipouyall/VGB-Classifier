@@ -43,7 +43,7 @@ def remove_emojis(data):
 if __name__ == "__main__":
     # nltk.download('punkt')
 
-    base = "OLIDv0/"
+    base = "OLIDv2/"
     df = pd.read_csv("olid-training-v1.0.tsv", sep="\t")
     df["label"] = df["subtask_a"].replace({"OFF": 1, "NOT": 0})
     df.drop(labels=["id", "subtask_b", "subtask_c", "subtask_a"], inplace=True, axis=1)
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     df["tweet"] = df["tweet"].apply(lambda x: re.sub(r'@\w+', '', x))
 
     # Remove hashtags
-    df["tweet"] = df["tweet"].apply(lambda x: re.sub(r'#', '', x))
+    # df["tweet"] = df["tweet"].apply(lambda x: re.sub(r'#', '', x))
 
     # Remove URLs
     df["tweet"] = df["tweet"].apply(lambda x: re.sub(r'http\S+|www\S+|https\S+', '', x))
